@@ -1,0 +1,30 @@
+node('built-in') 
+{
+    stage('ContiniousDownload')
+    {
+        git branch: 'main', url: 'https://github.com/Surja07/Mavendev.git'
+    }
+    stage('ContiniousBuild')
+    {
+    sh 'mvn package'
+    }
+    stage('ContiniousDeployment')
+    {
+        sh 'scp "/var/lib/jenkins/workspace/pipeline final/target/selenium-test-1.0-SNAPSHOT.jar" ubuntu@172.31.21.170:/etc/tomcat10/HelloWorld.java'
+    }
+    stage('ContiniousTesting')
+    {
+ sh '''
+        if [ -f myapp/HelloWorld.java ]; then
+          javac myapp/HelloWorld.java
+          java -cp myapp HelloWorld
+        else
+          echo "HelloWorld.java not found. Skipping manual Java run."
+        fi
+        '''
+    }
+    stage('ContiniousRelease')
+    {
+        sh '''scp "/var/lib/jenkins/workspace/pipeline final/target/selenium-test-1.0-SNAPSHOT.jar" ubuntu@172.31.21.170:/etc/tomcat10/selenium-test-1.0-SNAPSHOT.jar'''
+    }
+}
