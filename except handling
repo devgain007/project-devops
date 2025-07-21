@@ -1,0 +1,19 @@
+pipeline{
+    agent any
+    stages{
+        stage('continious download')
+        {
+            steps{
+                git branch: 'main', url: 'https://github.com/devgain007/practice-codes.git'
+                script{
+                    try{
+                      git branch: 'main', url: 'https://github.com/devgain007/practice-codes.git'
+                    }
+                    catch(e) {
+                    echo ('download failed')
+                    }
+                }
+            }
+        }
+    }
+}
