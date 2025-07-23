@@ -1,0 +1,69 @@
+pipeline{
+    agent any
+    stages{
+        stage('Continiousdownlaod'){
+            steps{
+                script{
+                    try{
+                         git branch: 'main', url: 'https://github.com/devgain007/practice-codes.git'
+                    }
+                    catch(e){
+                        mail bcc: '', body: 'Git unable to download the source code', cc: '', from: '', replyTo: '', subject: 'Download failed', to: 'git.team@gmail.com'
+                        exit(1)
+                        }
+                    }
+                }
+            }
+         stage('ContiniouBuild'){
+             steps{
+                 script{
+                     try{
+                         sh 'python3 prac.py'
+                     }
+                     catch(e){
+                         mail bcc: '', body: 'Unable to build the code', cc: '', from: '', replyTo: '', subject: 'build failed', to: 'build.team@gmail.com'
+                         exit(e)
+                        }
+                    }
+                }
+             }
+             stage('ContiniousDeployment'){
+                 steps{
+                     script{
+                     try{
+                         sh 'scp "/var/lib/jenkins/workspace/Declarative pipeline/prac.py" ubuntu@172.31.21.170:/etc/tomcat10/prac.py'
+                     }
+                     catch(e){
+                         mail bcc: '', body: 'Unable to Deploy the code', cc: '', from: '', replyTo: '', subject: 'Deploymentfailed', to: 'deploy.team@gmail.com'
+                         exit(1)
+                     }
+                 }
+             }
+          }
+          stage('ContiniousTesting'){
+              steps{
+                  script{
+                      try{
+                          sh 'python3 "/var/lib/jenkins/workspace/Declarative pipeline/prac.py"'
+                      }
+                      catch(e){
+                          mail bcc: '', body: 'Unable to Test the code', cc: '', from: '', replyTo: '', subject: 'Testingfailed', to: 'testing.team@gmail.com'
+                          exit(1)
+                      }
+                  }
+              }
+          }
+          stage('ContiniousRelease'){
+              steps{
+                  script{
+                      try{
+                          sh '''scp "/var/lib/jenkins/workspace/Declarative pipeline/prac.py" ubuntu@172.31.21.170:/home/ubuntu/App/prac.py'''
+                      }
+                      catch(e){
+                          mail bcc: '', body: 'Unable to release the code into the prod server', cc: '', from: '', replyTo: '', subject: 'Release failed', to: 'realease.team@gmail.com'
+                      }
+                  }
+              }
+          }
+       } 
+    }
