@@ -1,0 +1,17 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('ContiniousDownload') {
+            steps {
+                git branch: 'main', url: 'https://github.com/devgain007/practice-codes.git'
+            }
+        }
+
+        stage('ContiniousBuild') {
+            steps {
+                sh 'python3 prac.py'
+            }
+        }
+}
+}
