@@ -1,0 +1,35 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('ContiniousDownload') {
+            steps {
+                git branch: 'main', url: 'https://github.com/devgain007/practice-codes.git'
+            }
+        }
+
+        stage('ContiniousBuild') {
+            steps {
+                sh 'python3 prac.py'
+            }
+        }
+        stage('ContiniousDeployment'){
+            steps{
+               sh 'scp "/var/lib/jenkins/workspace/Declarative pipeline/prac.py" ubuntu@172.31.21.170:/etc/tomcat10/prac.py'
+            }
+        }
+        stage('ContiniousTesting'){
+            steps{
+                sh 'python3 "/var/lib/jenkins/workspace/Declarative pipeline/prac.py"'
+
+            }
+        }
+        stage('ContiniousRelease'){
+            steps{
+               sh '''scp "/var/lib/jenkins/workspace/Declarative pipeline/prac.py" ubuntu@172.31.21.170:/home/ubuntu/App/prac.py'''
+                
+            }
+        }
+        
+    }
+}
